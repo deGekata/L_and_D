@@ -24,36 +24,44 @@ void pop_node(Lexer* lexer) {
 
 Node* get_node(Lexer* lexer) {
     assert(lexer && "must not be null");
+    $deb
 
     if (lexer->cur_token) return lexer->cur_token;
+    $deb
 
     skip_unnecessary(lexer);
+    $deb
 
     if (lexer->cur_pos >= lexer->size) {
         return NULL;
     }
+    $deb
     
     lexer->cur_token = NULL;
-
+    $deb
     if ('0' <= lexer->buffer[lexer->cur_pos] && lexer->buffer[lexer->cur_pos] <= '9') {
         lexer->cur_token = try_get_num(lexer);
         if (lexer->cur_token != NULL) return lexer->cur_token;
     }
+    $deb
 
     lexer->cur_token =  try_get_operator(lexer);
     if (lexer->cur_token != NULL) {
         return lexer->cur_token;
     }
+    $deb
 
     lexer->cur_token = try_get_name(lexer);
     if (lexer->cur_token != NULL) {
         return lexer->cur_token;
     }
+    $deb
     
     lexer->cur_token = try_get_special(lexer);
     if (lexer->cur_token != NULL) {
         return lexer->cur_token;
     }
+    $deb
 
     return lexer->cur_token;
 }

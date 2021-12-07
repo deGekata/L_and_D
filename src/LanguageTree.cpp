@@ -17,6 +17,7 @@ Node* parse_single_expr(Lexer* lexer) {
     // if (token->type == NodeType::CUSTOM) {
 
     // }
+    assert(0 && "TODO single expr");
 
 }
 
@@ -133,19 +134,27 @@ Node* parse_unary(Lexer* lexer) {
 
     switch (ret_node->type) {
     case NodeType::OPERATOR:
+        $deb
         if (is_unary(ret_node)) {
+            $deb
             pop_node(lexer);
-            Node* ret_node_dep = ret_node_dep =  parse_unary(lexer);
+            Node* ret_node_dep =  parse_unary(lexer);
+            printf("ret_node_dep  = %p\n", ret_node_dep);
+            $deb
             if (ret_node->data.opr == Operator::INC || ret_node->data.opr == Operator::DEC) {
+                $deb
                 if (ret_node_dep->data.opr != Operator::INC &&
                     ret_node_dep->data.opr != Operator::DEC &&
                     ret_node_dep->type != NodeType::IDENTIFIER) {
+                        $deb
                     printf("expected lvalue\n");
                     //TODO: raise error
                     assert(0);
                 }
             }
+            $deb
             ret_node->right = ret_node_dep;
+            $deb
         } else {
             printf("raise error expected unary\n");
             //TODO: raise error
@@ -154,10 +163,11 @@ Node* parse_unary(Lexer* lexer) {
         break;
     
     default:
+        $deb
         return parse_operand(lexer);
         break;
     }
-    
+    return ret_node;
 }
 
 Node* parse_unary_require(Lexer* lexer) {
@@ -178,7 +188,8 @@ Node* parse_operand(Lexer* lexer) {
         break;
     
     case NodeType::IDENTIFIER:
-        //todo
+        pop_node(lexer);
+        return token;
         break;
     
     
