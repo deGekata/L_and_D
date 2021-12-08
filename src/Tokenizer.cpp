@@ -162,6 +162,14 @@ Node* try_get_operator(Lexer* lexer) {
             ret_node->data.opr =  Operator::SUB;
             break;
         
+        case '*':
+            ret_node->data.opr =  Operator::MUL;
+            break;
+        
+        case '/':
+            ret_node->data.opr =  Operator::DIV;
+            break;
+        
         case '>':
             ret_node->data.opr =  Operator::GRTR;
             break;

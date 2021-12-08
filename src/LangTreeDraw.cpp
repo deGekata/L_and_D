@@ -11,6 +11,8 @@ const char* Prev_link_color = "red";
 const char* Free_link_color = "orange";
 
 void draw_tree(Node* node) {
+    assert(node && "node must not be NULL");
+    
     static int dumpNumber = 0;
     printf("graphing %d\n", dumpNumber);
 
@@ -19,10 +21,11 @@ void draw_tree(Node* node) {
     
     FILE* file = fopen(filename, "w");
     assert(file && "cant open file");
-
+    printf("__LINE__ is %d\n", __LINE__);
     fprintf(file,   "digraph G{\n");
     fprintf(file,   "   nodesep=0.1;\n");
     fprintf(file,   "   ratio=1;\n");
+    printf("__LINE__ is %d\n", __LINE__);
     
     draw_node(node, file);
 
@@ -39,37 +42,58 @@ void draw_tree(Node* node) {
 
 void draw_node(Node* node, FILE* output) {
     assert(node && "node must not be NULL");
+    printf("__LINE__ is %d\n", __LINE__);
+
+    assert(output && "output must not be NULL");
+    printf("__LINE__ is %d\n", __LINE__);
 
     fprintf(output, "   L%lu[label=", node);
+    printf("__LINE__ is %d\n", __LINE__);
+    printf("node type %d \n", node->type);
     switch (node->type) {
     case NodeType::IDENTIFIER :
+        printf("__LINE__ is %d\n", __LINE__);
+    
         draw_identifier(node, output);
         break;
     
     case NodeType::OPERATOR :
         draw_operator(node, output);
+        printf("__LINE__ is %d\n", __LINE__);
+
         break;
     
     case NodeType::NUMBER :
         draw_number(node, output);
+        printf("__LINE__ is %d\n", __LINE__);
+
         break;
     
     default:
         //TODO: raise error
-        printf("raise error unknown type");
-        assert(0);
+        printf("__LINE__ is %d\n", __LINE__);
+        
+        printf("raise error unknown type\n");
+        assert(0 && "raise error unknown type");
         break;
     }
     
     fprintf(output, " style=filled];\n");
 
     if (node->left != NULL)  { 
-        draw_node(node->left,  output);
         fprintf(output, "    L%lu->L%lu[color=\"black\"];\n", node, node->left);
     }
+
+    if (node->right != NULL) { 
+        fprintf(output, "    L%lu->L%lu[color=\"black\"];\n", node, node->right);
+    }
+
+    if (node->left != NULL)  { 
+        draw_node(node->left,  output);
+    }
+    
     if (node->right != NULL) { 
         draw_node(node->right,  output);
-        fprintf(output, "    L%lu->L%lu[color=\"black\"];\n", node, node->right);
     }
 
 }

@@ -117,16 +117,35 @@ Node* parse_addsub_require(Lexer* lexer) {
 //     assert(lexer && "lexer must not be null");
 // }
 
+
 Node* parse_muldiv(Lexer* lexer) {
     assert(lexer && "lexer must not be null");
+    Node* ret_node = parse_unary(lexer);
+    
+    Node* op_node = get_node(lexer);
+
+    if (op_node != NULL) {
+        if (op_node->type == NodeType::OPERATOR) {
+            if (op_node->data.opr == Operator::MUL || op_node->data.opr == Operator::DIV || op_node->data.opr == Operator::MOD) {
+                pop_node(lexer);
+                op_node->left = ret_node;
+                op_node->right = parse_muldiv(lexer);
+                return op_node;
+            } else {
+                //FIXME:
+            }
+        } else {
+            //FIXME:
+            assert(0 && "Expected MUL token");
+        }
+    }
+
+    return ret_node;
 }
 
 Node* parse_muldiv_require(Lexer* lexer) {
     assert(lexer && "lexer must not be null");
-    Node* ret_node = get_node(lexer);
-
 }
-
 
 Node* parse_unary(Lexer* lexer) {
     assert(lexer && "lexer must not be null");

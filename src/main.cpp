@@ -12,8 +12,8 @@ int main() {
 
     
 
-    Node* node = parse_unary(lexer);    
-    
+    Node* node = parse_muldiv(lexer);    
+    printf("node is %d\n", node);
     draw_tree(node);
 
     // Node* node = get_node(lexer);

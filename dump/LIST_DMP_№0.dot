@@ -1,0 +1,11 @@
+digraph G{
+   nodesep=0.1;
+   ratio=1;
+   L140736359127424[label="*", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736359127424->L140736359127360[color="black"];
+    L140736359127424->L140736359127488[color="black"];
+   L140736359127360[label="abc", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
+   L140736359127488[label="--", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736359127488->L140736359127616[color="black"];
+   L140736359127616[label="d", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
+}
