@@ -12,7 +12,7 @@ int main() {
 
     
 
-    Node* node = parse_muldiv(lexer);    
+    Node* node = parse_addsub(lexer);    
     printf("node is %d\n", node);
     draw_tree(node);
 

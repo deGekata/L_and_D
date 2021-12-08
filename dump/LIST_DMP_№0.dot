@@ -1,11 +1,27 @@
 digraph G{
    nodesep=0.1;
    ratio=1;
-   L140736359127424[label="*", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
-    L140736359127424->L140736359127360[color="black"];
-    L140736359127424->L140736359127488[color="black"];
-   L140736359127360[label="abc", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
-   L140736359127488[label="--", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
-    L140736359127488->L140736359127616[color="black"];
-   L140736359127616[label="d", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
+   L140736810789568[label="+", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736810789568->L140736810789312[color="black"];
+    L140736810789568->L140736810789696[color="black"];
+   L140736810789312[label="%", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736810789312->L140736810789248[color="black"];
+    L140736810789312->L140736810789504[color="black"];
+   L140736810789248[label="a", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
+   L140736810789504[label="b", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
+   L140736810789696[label="+", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736810789696->L140736810789632[color="black"];
+    L140736810789696->L140736810789952[color="black"];
+   L140736810789632[label="1", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+   L140736810789952[label="+", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736810789952->L140736810789824[color="black"];
+    L140736810789952->L140736810790016[color="black"];
+   L140736810789824[label="*", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736810789824->L140736810789760[color="black"];
+    L140736810789824->L140736810789888[color="black"];
+   L140736810789760[label="2", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+   L140736810789888[label="10", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+   L140736810790016[label="--", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L140736810790016->L140736810790208[color="black"];
+   L140736810790208[label="c", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
 }

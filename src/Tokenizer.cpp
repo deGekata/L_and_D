@@ -50,7 +50,7 @@ Node* get_node(Lexer* lexer) {
         return lexer->cur_token;
     }
     $deb
-
+    Node* node = (Node*) calloc(1, sizeof(Node));
     lexer->cur_token = try_get_name(lexer);
     if (lexer->cur_token != NULL) {
         return lexer->cur_token;
@@ -168,6 +168,10 @@ Node* try_get_operator(Lexer* lexer) {
         
         case '/':
             ret_node->data.opr =  Operator::DIV;
+            break;
+        
+        case '%':
+            ret_node->data.opr =  Operator::MOD;
             break;
         
         case '>':
