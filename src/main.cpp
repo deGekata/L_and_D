@@ -4,17 +4,22 @@
 #include "LanguageTree.hpp"
 #include "LangTreeDraw.hpp"
 
+
+
+
 int main() {
     Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
     FILE* file = fopen("test.txt", "r");
 
     init_lexer(lexer, file);
 
-    
+    printf("%s \n", __FUNCTION__);
 
-    Node* node = parse_addsub(lexer);    
+    Node* node = parse_assigment_op(lexer);    
     printf("node is %d\n", node);
     draw_tree(node);
+
+    // printf(" %d result \n";
 
     // Node* node = get_node(lexer);
 

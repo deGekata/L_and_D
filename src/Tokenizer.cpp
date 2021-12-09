@@ -82,11 +82,13 @@ Node* try_get_num(Lexer* lexer) {
     while (lexer->cur_pos < lexer->size && isdigit(lexer->buffer[lexer->cur_pos])) {
         ret_num = ret_num * 10 + (lexer->buffer[lexer->cur_pos++] - '0');
         lexer->line_pos++;
+        printf("%d line pos\n", lexer->line_pos);
     }
 
     ret_node->type = NodeType::NUMBER;
-    ret_node->data.num = ret_num;
-
+    ret_node->data.num = ret_num    ;
+    ret_node->line = lexer->line;
+    ret_node->pos = lexer->line_pos;
     return ret_node;
 }
 
@@ -228,7 +230,8 @@ Node* try_get_name(Lexer* lexer) {
 
     Node* ret_node = (Node*) calloc(1, sizeof(Node*));
     ret_node->type = NodeType::IDENTIFIER;
-    ret_node->pos  = lexer->line_pos;
+    ret_node->line = lexer->line;
+    ret_node->pos = lexer->line_pos;
     
     size_t len = 0;
     while (isalpha(lexer->buffer[lexer->cur_pos]) || lexer->buffer[lexer->cur_pos] == '_') {
@@ -245,6 +248,7 @@ Node* try_get_name(Lexer* lexer) {
         ret_node->name = (char*) calloc(len + 1, sizeof(char));
         memcpy(ret_node->name, lexer->buffer + lexer->cur_pos - len, len);
         ret_node->name[len] = '\0';
+        
     #endif
 
     return ret_node;
@@ -299,7 +303,8 @@ void skip_unnecessary(Lexer* lexer) {
     while (lexer->cur_pos < lexer->size && is_unnecessary(lexer->buffer[lexer->cur_pos])) {
         lexer->line_pos = lexer->buffer[lexer->cur_pos] == '\n' ? 0 : lexer->line_pos + 1;
         lexer->line += lexer->buffer[lexer->cur_pos] == '\n';
-        lexer->cur_pos++;
+        lexer->cur_pos++;   
+        printf("%d line pos\n", lexer->line_pos);
     }
 
     return;
