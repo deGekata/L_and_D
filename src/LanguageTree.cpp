@@ -12,7 +12,7 @@
         } else {                                                                                    \
             /*FIXME:*/                                                                              \
             printf("\033[1;30;41mOn line %d, column %d expected " # __VA_ARGS__ "\033[0m\n", op_node->line, op_node->pos);  \
-            assert(0);                                                \
+            assert(0);                                                                              \
         }                                                                                           \
     }
 
@@ -42,7 +42,11 @@ bool check_eq(int cnt, Node* reference, ...) {
 Node* parse_single_expr(Lexer* lexer) {
     assert(lexer && "lexer must not be null");
 
-    assert(0 && "TODO single expr");
+    Node* ret_node = parse_assigment_op(lexer);
+
+    return ret_node;
+
+    // assert(0 && "TODO single expr");
 
 }
 
@@ -301,9 +305,14 @@ Node* parse_operand(Lexer* lexer) {
     
     
     case NodeType::CUSTOM:
-        if (token->data.custom == ')') {/*raise error*/}
+        if (token->data.custom == ')') {return NULL;}
         if (token->data.custom == '(') {
-            parse_single_expr(lexer);
+            Node* ret_node = parse_single_expr(lexer);
+            token = get_node(lexer);
+            if (token == NULL || token->type != NodeType::CUSTOM || token->data.custom != ')' ) {
+                assert(0 && "expextec closing paranthness");
+                return NULL;
+            }
         }
         break;
 
