@@ -216,6 +216,9 @@ void draw_operator(Node* node, FILE* output) {
         fprintf(output, "%s", "!=");
         break;
     
+    case Operator::QQ:
+        fprintf(output, "%s", "??");
+        break;
     
     
     default:

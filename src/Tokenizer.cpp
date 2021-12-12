@@ -1,5 +1,21 @@
 #include "Tokenizer.hpp"
 
+int64_t* operator_hashes = 0;
+size_t operator_hashes_size = 0;
+size_t operator_hashes_cap  = 0;
+
+#define new_command(keyword) \
+    if (operator_hashes_size == operator_hashes_cap) {\
+        operator_hashes = (int64_t*) realloc(operator_hashes, sizeof(*operator_hashes) * operator_hashes_cap * 2);\
+        assert(operator_hashes && "to many opeartor hashes, no enough memory");\
+        operator_hashes_cap *= 2;\
+    }\
+    operator_hashes[operator_hashes_size++] = hash_func(keyword, strlen(keyword), 0);
+
+
+void init_operator_hashes() {
+    new_command("while");
+}
 
 void init_lexer (Lexer* lexer, FILE* file) {
     assert(lexer && "must not be null");
@@ -141,6 +157,10 @@ Node* try_get_operator(Lexer* lexer) {
             ret_node->data.opr = Operator::AND;
             break;
         
+        case '??':
+            ret_node->data.opr = Operator::QQ;
+            break;
+        
         default:
             ret_node->data.opr = Operator::NONE;
             break;
@@ -193,8 +213,13 @@ Node* try_get_operator(Lexer* lexer) {
             break;
         
         case '^':
-            ret_node->data.opr =  Operator::NOT;
+            ret_node->data.opr =  Operator::XOR;
             break;
+        
+        case '@':
+            ret_node->data.opr =  Operator::ADDR;
+            break;
+        
         
         // case '|':
         //     return Operator::;
@@ -251,6 +276,9 @@ Node* try_get_name(Lexer* lexer) {
         
     #endif
 
+
+
+
     return ret_node;
 
 
@@ -262,7 +290,7 @@ Node* try_get_special(Lexer* lexer) {
     if (lexer->cur_pos >= lexer->size) return NULL;
 
     Node* ret_node = (Node*) calloc(1, sizeof(Node));
-
+    ret_node->type = NodeType::NONE;
 
 
     switch (lexer->buffer[lexer->cur_pos]) {
@@ -284,10 +312,19 @@ Node* try_get_special(Lexer* lexer) {
     case ')':
         ret_node->type = NodeType::CUSTOM;
         ret_node->data.custom = ')';
+        printf("closing\n");
         break;
 
     default:
         break;
+    }
+
+    if (ret_node->type != NodeType::NONE) {
+        ret_node->line  =  lexer->line;
+        ret_node->pos   =  lexer->cur_pos;
+        lexer->line_pos += 1;
+        lexer->cur_pos  += 1;
+        return ret_node;
     }
     return ret_node;
 }
@@ -318,7 +355,7 @@ size_t get_file_size (FILE* inp) {
     return size;
 }
 
-int64_t hashFunc_(const char * str, size_t len, int64_t init) {
+int64_t hash_func(const char * str, size_t len, int64_t init) {
     unsigned long long int hash = init;
     for (size_t it = 0; it < len; str++, it++) {
         hash += (unsigned char)(*str);

@@ -15,7 +15,7 @@ int main() {
 
     printf("%s \n", __FUNCTION__);
 
-    Node* node = parse_assigment_op(lexer);    
+    Node* node = parse_single_expr(lexer);    
     printf("node is %d\n", node);
     draw_tree(node);
 
