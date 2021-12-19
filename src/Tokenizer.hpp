@@ -47,7 +47,7 @@ Node* try_get_name(Lexer* lexer);
 
 Node* try_get_special(Lexer* lexer);
 
-void try_name_to_operator(Lexer* lexer);
+void try_name_to_operator(Node* node);
 
 bool is_operator(char chr);
 

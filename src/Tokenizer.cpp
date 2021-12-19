@@ -289,6 +289,7 @@ Node* try_get_name(Lexer* lexer) {
     #endif
 
     ret_node->data.id = (idt_t) hash_func(ret_node->name, len, 0);
+    try_name_to_operator(ret_node);
     printf("ret_node id = %zu, '%s'\n", ret_node->data.id, ret_node->name);
 
 

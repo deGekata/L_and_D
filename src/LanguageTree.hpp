@@ -11,9 +11,9 @@ Node* parse_single_expr(Lexer* lexer);
 bool  parse_single_expr_require(Node* op_node);
 
 Node* parse_exprs(Lexer* lexer);
-bool  parse_exprs_require(Node* op_node);
+bool parse_exprs_require_sep(Node* op_node);
+bool parse_exprs_require_end(Node* op_node);
 
-// Node* parse_var
 
 Node* parse_assigment_expr(Lexer* lexer);
 bool  parse_assigment_expr_require(Node* op_node);

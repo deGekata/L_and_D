@@ -4,6 +4,7 @@ const size_t Max_out_file_len = 150;
 const size_t Max_cmd_len  = 149;
 
 
+
 const char* Img_dump_dir = "./dump/";
 
 const char* Next_link_color = "blue";
@@ -220,7 +221,14 @@ void draw_operator(Node* node, FILE* output) {
         fprintf(output, "%s", "??");
         break;
     
+    case Operator::ENDL:
+        fprintf(output, "%s", ";");
+        break;
     
+    case Operator::COMMA:
+        fprintf(output, "%s", ",");
+        break;
+
     default:
         break;
     }

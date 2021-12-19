@@ -7,16 +7,16 @@
 
 
 
-int main() {
+int main(int argc, char* argv[]) {
     Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
-    FILE* file = fopen("test.txt", "r");
-
+    FILE* file = fopen("/mnt/c/Users/Yaric-PC/Documents/Git Projects/L_and_D/test.txt", "r");
+    printf("%s file loc\n", argv[0]);
     init_lexer(lexer, file);
     init_operator_hashes();
     
     printf("%s \n", __FUNCTION__);
 
-    Node* node = parse_single_expr(lexer);    
+    Node* node = parse_exprs(lexer);    
     printf("node is %d\n", node);
     draw_tree(node);
 

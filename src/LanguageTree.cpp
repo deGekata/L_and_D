@@ -19,7 +19,9 @@
         }                                                                                           \
     }
 
+size_t print_offset = 0; 
 
+#define $db for(int it = 0; it < print_offset; ++it) printf("  "); printf("%s in func line = %d\n", __FUNCTION__, __LINE__); print_offset++;
 
 
 bool check_eq(int cnt, Node* reference, ...) {
@@ -40,14 +42,77 @@ bool check_eq(int cnt, Node* reference, ...) {
     
 }
 
+//TODO:
+Node* parse_exprs(Lexer* lexer) {
+    assert(lexer && "lexer must not be null");
+
+    Node* ret_node = parse_single_expr(lexer);
+    Node* exp_node, *cur_node, *sep_node;
+    exp_node = cur_node = sep_node = NULL;
+
+    if (ret_node == NULL) {
+        cur_node = get_node(lexer);
+        if (parse_exprs_require_end(cur_node)) {
+            return cur_node;
+        } else {
+            return NULL;
+        }
+    }
+
+    sep_node = get_node(lexer);
+
+    if (parse_exprs_require_sep(sep_node)) {
+        cur_node = (Node*) calloc(1, sizeof(Node));
+        exp_node = ret_node;
+        ret_node = cur_node;
+        do {
+            printf("in do whille-----------------------------------------------\n");
+            pop_node(lexer);
+            cur_node->right = sep_node;
+            sep_node->left = exp_node;
+            exp_node = parse_single_expr(lexer);
+            cur_node = sep_node;
+            sep_node = get_node(lexer);
+        } while  (parse_exprs_require_sep(sep_node));
+        cur_node->right = exp_node;
+        cur_node = ret_node;
+        ret_node = ret_node->right;
+        free(cur_node);
+    }
+    cur_node = get_node(lexer);
+    if (parse_exprs_require_end(cur_node)) {
+        cur_node->left = ret_node;
+        return cur_node;
+    } else {
+        assert(0 && "expected ';'");
+    }
+}
+
+bool parse_exprs_require_sep(Node* op_node) {
+    assert(op_node && "op_node must not be null");
+    
+    REQUIRE_OP(op_node, Operator::COMMA);
+    
+    return false;
+}
+
+bool parse_exprs_require_end(Node* op_node) {
+    assert(op_node && "op_node must not be null");
+    
+    REQUIRE_OP(op_node, Operator::ENDL); 
+    
+    return false;
+}
+
 
 //TODO:
 Node* parse_single_expr(Lexer* lexer) {
+
     $fn
     assert(lexer && "lexer must not be null");
 
     Node* ret_node = parse_assigment_op(lexer);
-
+    printf("%x single_ret\n", ret_node);
     return ret_node;
 
     // assert(0 && "TODO single expr");
@@ -58,14 +123,6 @@ Node* parse_single_expr_require(Lexer* lexer) {
     assert(lexer && "lexer must not be null");
 }
 
-//TODO:
-Node* parse_exprs(Lexer* lexer) {
-    assert(lexer && "lexer must not be null");
-}
-
-Node* parse_exprs_require(Lexer* lexer) {
-    assert(lexer && "lexer must not be null");
-}
 
 
 
@@ -238,7 +295,7 @@ bool parse_addsub_require(Node* op_node) {
 
 
 Node* parse_muldiv(Lexer* lexer) {
-
+    print_offset++; 
     $fn
     assert(lexer && "lexer must not be null");
     Node* ret_node = parse_shift_op(lexer);
@@ -332,7 +389,7 @@ Node* parse_unary(Lexer* lexer) {
         } else {
             printf("raise error expected unary\n");
             //TODO: raise error
-            assert(0);
+            return NULL;
         }
         break;
     
