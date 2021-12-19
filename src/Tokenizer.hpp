@@ -11,6 +11,12 @@
 
 #define $deb printf("%d - cur_line\n", __LINE__);
 
+
+struct reserved_item {
+    idt_t hash;
+    Operator op;
+};
+
 struct Lexer {
     size_t line = 0;
     size_t line_pos = 0;
@@ -22,6 +28,7 @@ struct Lexer {
     Node* cur_token = NULL;
 };
 
+void init_operator_hashes();
 
 void init_lexer(Lexer* lexer, FILE* file);
 
@@ -40,6 +47,8 @@ Node* try_get_name(Lexer* lexer);
 
 Node* try_get_special(Lexer* lexer);
 
+void try_name_to_operator(Lexer* lexer);
+
 bool is_operator(char chr);
 
 bool is_unnecessary(char chr);
@@ -48,7 +57,7 @@ void skip_unnecessary(Lexer* lexer);
 
 size_t get_file_size (FILE* inp);
 
-int64_t hashFunc_(const char* str, size_t len, int64_t init);
+int64_t hash_func(const char * str, size_t len, int64_t init);
 
 
 #endif

@@ -1,21 +1,9 @@
 digraph G{
    nodesep=0.1;
    ratio=1;
-   L140736315001280[label="=", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
-    L140736315001280->L140736315001216[color="black"];
-    L140736315001280->L140736315001536[color="black"];
-   L140736315001216[label="a", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
-   L140736315001536[label="=", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
-    L140736315001536->L140736315001472[color="black"];
-    L140736315001536->L140736315001792[color="black"];
-   L140736315001472[label="b", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
-   L140736315001792[label=">", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
-    L140736315001792->L140736315001728[color="black"];
-    L140736315001792->L140736315001920[color="black"];
-   L140736315001728[label="c", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
-   L140736315001920[label="+", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
-    L140736315001920->L140736315001856[color="black"];
-    L140736315001920->L140736315001984[color="black"];
-   L140736315001856[label="3", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
-   L140736315001984[label="2", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+   L94279546600128[label="+", shape="circle", color="grey", thickness=4, fillcolor="darkolivegreen2" style=filled];
+    L94279546600128->L94279546600064[color="black"];
+    L94279546600128->L94279546600320[color="black"];
+   L94279546600064[label="while", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
+   L94279546600320[label="a", shape="circle", color="grey", thickness=4, fillcolor="cornflowerblue" style=filled];
 }

@@ -31,16 +31,16 @@ enum class Operator{
     NONE    = 0,
 
 // ##### Arithm operators #####
-    ADD     = 1,    // L + R                                                            [basic]
-    SUB     = 2,    // L - R                                                            [basic]
-    MUL     = 3,    // L * R                                                            [basic]
-    DIV     = 4,    // L / R                                                            [basic]
-    MOD     = 5,    // L % R                                                            [arithm]
-    AND     = 6,    // L & R                                                            [arithm]
-    OR      = 7,    // L | R                                                            [arithm]
-    XOR     = 8,    // L ^ R                                                            [arithm]
-    SHL     = 9,    // L << R                                                           [arithm]
-    SHR     = 10,   // L >> R                                                           [arithm]
+    ADD     = 1,    // L + R  ok                                                          [basic]
+    SUB     = 2,    // L - R  ok                                                        [basic]
+    MUL     = 3,    // L * R  ok                                                          [basic]
+    DIV     = 4,    // L / R  ok                                                          [basic]
+    MOD     = 5,    // L % R  ok                                                          [arithm]
+    AND     = 6,    // L & R  ok                                                          [arithm]
+    OR      = 7,    // L | R  ok                                                          [arithm]
+    XOR     = 8,    // L ^ R  ok                                                          [arithm]
+    SHL     = 9,    // L << R ok                                                          [arithm]
+    SHR     = 10,   // L >> R ok                                                          [arithm]
 
 // ##### ASSIGNMENT #####
     SET     = 11,   // L := R (Set L value to R).                                       [basic]
@@ -49,17 +49,17 @@ enum class Operator{
 //!
 //! @brief Return 0 or 1.
 //!
-    EQUAL   = 12,   // L == R                                                           [basic]
-    NON_EQ  = 13,   // L != R                                                           [basic]
-    LESS    = 14,   // L < R                                                            [basic]
-    GRTR    = 15,   // L > R                                                            [basic]
-    LESS_EQ = 16,   // L <= R                                                           [basic]
-    GRTR_EQ = 17,   // L >= R                                                           [basic]
+    EQUAL   = 12,   // L == R ok                                                       [basic]
+    NON_EQ  = 13,   // L != R  ok                                                          [basic]
+    LESS    = 14,   // L < R  ok                                                           [basic]
+    GRTR    = 15,   // L > R ok                                                            [basic]
+    LESS_EQ = 16,   // L <= R ok                                                           [basic]
+    GRTR_EQ = 17,   // L >= R ok                                                           [basic]
 
 //  ##### UNARY #####
-    NOT     = 18,  // !R                                                                [basic]
-    INC     = 19,  // L++ or ++R                                                        [unary]
-    DEC     = 20,  // L-- or --R                                                        [unary]
+    NOT     = 18,  // !R ok                                                                [basic]
+    INC     = 19,  // L++ or ++R  ok                                                       [unary]
+    DEC     = 20,  // L-- or --R  ok                                                           [unary]
 
 // ##### VAR & FUNC #####
     VAR     = 21,  // Declares L as local variable with R as value                        [basic]

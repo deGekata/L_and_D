@@ -1,6 +1,35 @@
 #include "Tokenizer.hpp"
 
 
+
+#define BASE_OPERATOR_HASHES_CAP 30
+reserved_item* operator_hashes = 0;
+size_t operator_hashes_size = 0;
+size_t operator_hashes_cap  = 0;
+
+#define new_command(keyword, res_op) \
+    if (operator_hashes_size == operator_hashes_cap) {\
+        operator_hashes = (reserved_item*) realloc(operator_hashes, sizeof(*operator_hashes) * operator_hashes_cap * 2);\
+        assert(operator_hashes && "to many opeartor hashes, no enough memory");\
+        operator_hashes_cap *= 2;\
+    }\
+    operator_hashes[operator_hashes_size].hash = hash_func(keyword, strlen(keyword), 0); \
+    operator_hashes[operator_hashes_size++].op = res_op;
+    
+
+
+void init_operator_hashes() {
+    if (operator_hashes == 0) {
+        operator_hashes = (reserved_item*) calloc(BASE_OPERATOR_HASHES_CAP, sizeof(reserved_item));
+        operator_hashes_cap = BASE_OPERATOR_HASHES_CAP;
+        operator_hashes_size = 0;
+    }
+    new_command("while", Operator::WHILE);
+    printf("while hash = %d\n", operator_hashes[operator_hashes_size - 1]);
+    new_command("var", Operator::VAR);
+    printf("var hash = %zu\n", operator_hashes[operator_hashes_size - 1]);
+}
+
 void init_lexer (Lexer* lexer, FILE* file) {
     assert(lexer && "must not be null");
     assert(file && "must not be null");
@@ -141,6 +170,10 @@ Node* try_get_operator(Lexer* lexer) {
             ret_node->data.opr = Operator::AND;
             break;
         
+        case '??':
+            ret_node->data.opr = Operator::QQ;
+            break;
+        
         default:
             ret_node->data.opr = Operator::NONE;
             break;
@@ -193,8 +226,13 @@ Node* try_get_operator(Lexer* lexer) {
             break;
         
         case '^':
-            ret_node->data.opr =  Operator::NOT;
+            ret_node->data.opr =  Operator::XOR;
             break;
+        
+        case '@':
+            ret_node->data.opr =  Operator::ADDR;
+            break;
+        
         
         // case '|':
         //     return Operator::;
@@ -248,12 +286,14 @@ Node* try_get_name(Lexer* lexer) {
         ret_node->name = (char*) calloc(len + 1, sizeof(char));
         memcpy(ret_node->name, lexer->buffer + lexer->cur_pos - len, len);
         ret_node->name[len] = '\0';
-        
     #endif
 
+    ret_node->data.id = (idt_t) hash_func(ret_node->name, len, 0);
+    printf("ret_node id = %zu, '%s'\n", ret_node->data.id, ret_node->name);
+
+
+
     return ret_node;
-
-
 }
 
 Node* try_get_special(Lexer* lexer) {
@@ -262,7 +302,7 @@ Node* try_get_special(Lexer* lexer) {
     if (lexer->cur_pos >= lexer->size) return NULL;
 
     Node* ret_node = (Node*) calloc(1, sizeof(Node));
-
+    ret_node->type = NodeType::NONE;
 
 
     switch (lexer->buffer[lexer->cur_pos]) {
@@ -284,12 +324,50 @@ Node* try_get_special(Lexer* lexer) {
     case ')':
         ret_node->type = NodeType::CUSTOM;
         ret_node->data.custom = ')';
+        printf("closing\n");
         break;
+
+    case '{':
+        ret_node->type = NodeType::CUSTOM;
+        ret_node->data.custom = '{';
+        printf("opening wavy\n");
+        break;
+
+    case '}':
+        ret_node->type = NodeType::CUSTOM;
+        ret_node->data.custom = '}';
+        printf("closing wavy\n");
+        break;
+
+    
 
     default:
         break;
     }
+
+    if (ret_node->type != NodeType::NONE) {
+        ret_node->line  =  lexer->line;
+        ret_node->pos   =  lexer->cur_pos;
+        lexer->line_pos += 1;
+        lexer->cur_pos  += 1;
+        return ret_node;
+    }
     return ret_node;
+}
+
+void try_name_to_operator(Node* node) {
+    assert(node && "node must not be NULL");
+    assert(operator_hashes && "operator_hashes must not be NULL");
+
+    for (size_t it = 0; it < operator_hashes_size; ++it) {
+        if (node->data.id == operator_hashes[it].hash) {
+            node->type = NodeType::OPERATOR;
+            node->data.opr = operator_hashes[it].op;
+            printf("found some stuff %d\n", node->data.opr);
+            return;
+        }
+    }
+    return;
 }
 
 bool is_unnecessary(char chr) {
@@ -318,9 +396,11 @@ size_t get_file_size (FILE* inp) {
     return size;
 }
 
-int64_t hashFunc_(const char * str, size_t len, int64_t init) {
+int64_t hash_func(const char * str, size_t len, int64_t init) {
     unsigned long long int hash = init;
+    printf("str = '%s', strlen = %d \n", str, len);
     for (size_t it = 0; it < len; str++, it++) {
+        printf("it = %d, sym:'%c', hash = %zu\n", it, *str, hash);
         hash += (unsigned char)(*str);
         hash += (hash << 20);
         hash ^= (hash >> 12);
