@@ -4,6 +4,11 @@ const size_t Max_out_file_len = 150;
 const size_t Max_cmd_len  = 149;
 
 
+#ifdef DEBUG_DRAW
+    #define ifdefined(var) var
+#else
+    #define ifdefined(var) ;
+#endif
 
 const char* Img_dump_dir = "./dump/";
 
@@ -22,11 +27,11 @@ void draw_tree(Node* node) {
     
     FILE* file = fopen(filename, "w");
     assert(file && "cant open file");
-    printf("__LINE__ is %d\n", __LINE__);
+    // ifdefined(printf("__LINE__ is %d\n", __LINE__);)
     fprintf(file,   "digraph G{\n");
     fprintf(file,   "   nodesep=0.1;\n");
     fprintf(file,   "   ratio=1;\n");
-    printf("__LINE__ is %d\n", __LINE__);
+    // ifdefined(printf("__LINE__ is %d\n", __LINE__);)
     
     draw_node(node, file);
 
@@ -41,41 +46,46 @@ void draw_tree(Node* node) {
     ++dumpNumber;
 }
 
+
+
+
 void draw_node(Node* node, FILE* output) {
     assert(node && "node must not be NULL");
-    printf("__LINE__ is %d\n", __LINE__);
+    ifdefined(ifdefined(printf("__LINE__ is %d\n", __LINE__);))
 
     assert(output && "output must not be NULL");
-    printf("__LINE__ is %d\n", __LINE__);
+    ifdefined(ifdefined(printf("__LINE__ is %d\n", __LINE__);))
 
     fprintf(output, "   L%lu[label=", node);
-    printf("__LINE__ is %d\n", __LINE__);
-    printf("node type %d \n", node->type);
+    ifdefined(printf("__LINE__ is %d\n", __LINE__);)
+    ifdefined(printf("node type %d \n", node->type);)
     switch (node->type) {
     case NodeType::IDENTIFIER :
-        printf("__LINE__ is %d\n", __LINE__);
+        ifdefined(printf("__LINE__ is %d\n", __LINE__);)
     
         draw_identifier(node, output);
         break;
     
     case NodeType::OPERATOR :
         draw_operator(node, output);
-        printf("__LINE__ is %d\n", __LINE__);
+        ifdefined(printf("__LINE__ is %d\n", __LINE__);)
 
         break;
     
     case NodeType::NUMBER :
         draw_number(node, output);
-        printf("__LINE__ is %d\n", __LINE__);
+        ifdefined(printf("__LINE__ is %d\n", __LINE__);)
 
         break;
     
     default:
         //TODO: raise error
-        printf("__LINE__ is %d\n", __LINE__);
+        ifdefined(printf("__LINE__ is %d\n", __LINE__);)
         
         printf("raise error unknown type\n");
-        assert(0 && "raise error unknown type");
+        fprintf(output, "\"%s\", shape=\"rectangle\", color=\"grey\", thickness=4, fillcolor=\"", node->name);
+        fprintf(output, "cornflowerblue\"");
+        // assert(0 && "raise error unknown type");
         break;
     }
     
@@ -104,7 +114,7 @@ void draw_number(Node* node, FILE* output) {
     assert(output && "output must not be NULL");
     assert(node->type == NodeType::NUMBER && "node->type must be NodeType::NUMBER");
 
-    fprintf(output, "\"%d\", shape=\"circle\", color=\"grey\", thickness=4, fillcolor=\"", node->data.num);
+    fprintf(output, "\"%d\", shape=\"rectangle\", color=\"grey\", thickness=4, fillcolor=\"", node->data.num);
     fprintf(output, "darkolivegreen2\"");
     return;
 }
@@ -229,11 +239,21 @@ void draw_operator(Node* node, FILE* output) {
         fprintf(output, "%s", ",");
         break;
 
+    case Operator::VAR:
+        fprintf(output, "%s", "VAR");
+        break;
+    
+    case Operator::FUNC:
+        fprintf(output, "%s", "function");
+
+    case Operator::F_ARG:
+        fprintf(output, "%s", ":");
+
     default:
         break;
     }
 
-    fprintf(output, "\", shape=\"circle\", color=\"grey\", thickness=4, fillcolor=\"darkolivegreen2\"");
+    fprintf(output, "\", shape=\"rectangle\", color=\"grey\", thickness=4, fillcolor=\"darkolivegreen2\"");
 
     return ;
 }
@@ -243,7 +263,7 @@ void draw_identifier(Node* node, FILE* output) {
     assert(output && "output must not be NULL");
     assert(node->type == NodeType::IDENTIFIER && "node->type must be NodeType::IDENTIFIER");
 
-    fprintf(output, "\"%s\", shape=\"circle\", color=\"grey\", thickness=4, fillcolor=\"", node->name);
+    fprintf(output, "\"%s\", shape=\"rectangle\", color=\"grey\", thickness=4, fillcolor=\"", node->name);
     fprintf(output, "cornflowerblue\"");
     return;
 }

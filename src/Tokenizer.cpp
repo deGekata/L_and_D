@@ -28,6 +28,8 @@ void init_operator_hashes() {
     printf("while hash = %d\n", operator_hashes[operator_hashes_size - 1]);
     new_command("var", Operator::VAR);
     printf("var hash = %zu\n", operator_hashes[operator_hashes_size - 1]);
+    new_command("func", Operator::FUNC);
+    printf("func hash = %zu\n", operator_hashes[operator_hashes_size - 1]);
 }
 
 void init_lexer (Lexer* lexer, FILE* file) {
@@ -53,46 +55,47 @@ void pop_node(Lexer* lexer) {
 
 Node* get_node(Lexer* lexer) {
     assert(lexer && "must not be null");
-    $deb
+    // $deb
 
     if (lexer->cur_token) return lexer->cur_token;
-    $deb
+    // $deb
 
     skip_unnecessary(lexer);
-    $deb
+    // $deb
 
     if (lexer->cur_pos >= lexer->size) {
         return NULL;
     }
-    $deb
+    // $deb
     
     lexer->cur_token = NULL;
-    $deb
+    // $deb
     if ('0' <= lexer->buffer[lexer->cur_pos] && lexer->buffer[lexer->cur_pos] <= '9') {
         lexer->cur_token = try_get_num(lexer);
         if (lexer->cur_token != NULL) return lexer->cur_token;
     }
-    $deb
+    // $deb
 
     lexer->cur_token =  try_get_operator(lexer);
     if (lexer->cur_token != NULL) {
         return lexer->cur_token;
     }
-    $deb
-    Node* node = (Node*) calloc(1, sizeof(Node));
+    // $deb
+    // Node* node = (Node*) calloc(1, sizeof(Node));
     lexer->cur_token = try_get_name(lexer);
     if (lexer->cur_token != NULL) {
         return lexer->cur_token;
     }
-    $deb
+    // $deb
     
     lexer->cur_token = try_get_special(lexer);
     if (lexer->cur_token != NULL) {
         return lexer->cur_token;
     }
-    $deb
+    // $deb
 
-    return lexer->cur_token;
+    return NULL;
+    // return lexer->cur_token;
 }
 
 Node* try_get_num(Lexer* lexer) {
@@ -266,7 +269,7 @@ Node* try_get_name(Lexer* lexer) {
 
     if (lexer->cur_pos >= lexer->size) return NULL;
 
-    Node* ret_node = (Node*) calloc(1, sizeof(Node*));
+    Node* ret_node = (Node*) calloc(1, sizeof(Node));
     ret_node->type = NodeType::IDENTIFIER;
     ret_node->line = lexer->line;
     ret_node->pos = lexer->line_pos;
@@ -353,7 +356,8 @@ Node* try_get_special(Lexer* lexer) {
         lexer->cur_pos  += 1;
         return ret_node;
     }
-    return ret_node;
+    free(ret_node);
+    return NULL;
 }
 
 void try_name_to_operator(Node* node) {
@@ -380,10 +384,11 @@ void skip_unnecessary(Lexer* lexer) {
     assert(lexer->buffer && "must not be null");
     
     while (lexer->cur_pos < lexer->size && is_unnecessary(lexer->buffer[lexer->cur_pos])) {
-        lexer->line_pos = lexer->buffer[lexer->cur_pos] == '\n' ? 0 : lexer->line_pos + 1;
+        lexer->line_pos = (lexer->buffer[lexer->cur_pos] == '\n') ? 0 : lexer->line_pos + 1;
         lexer->line += lexer->buffer[lexer->cur_pos] == '\n';
+        if (lexer->buffer[lexer->cur_pos] == '\n') printf("----------------------------new line\n");
         lexer->cur_pos++;   
-        printf("%d line pos\n", lexer->line_pos);
+        // printf("%d line pos _s\n", lexer->line_pos);
     }
 
     return;

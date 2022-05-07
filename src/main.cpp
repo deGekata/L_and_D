@@ -9,17 +9,32 @@
 
 int main(int argc, char* argv[]) {
     Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
-    FILE* file = fopen("/mnt/c/Users/Yaric-PC/Documents/Git Projects/L_and_D/test.txt", "r");
+    // FILE* file = fopen("/mnt/c/Users/Yaric-PC/Documents/Git Projects/L_and_D/test.txt", "r");
+    system("pwd");
+    FILE* file = fopen("test.txt", "r");
     printf("%s file loc\n", argv[0]);
     init_lexer(lexer, file);
     init_operator_hashes();
-    
+    // Node* nd = get_node(lexer);
+    // while (nd != NULL) {
+    //     draw_node(nd, stdout);
+    //     // printf("cur token='%s'\n", nd->name);
+    //     pop_node(lexer);
+    //     nd = get_node(lexer);
+    // }
+    // return 0;
     printf("%s \n", __FUNCTION__);
+    
+    Node* node = parse_func_decl(lexer);
+    // Node* node = parse_func_body(lexer);
+    // Node* node = parse_single_expr(lexer);
 
-    Node* node = parse_exprs(lexer);    
+    // Node* node = parse_exprs(lexer);
+    // Node* node  = parse_decl_var(lexer);
+    if (node == NULL && get_node(lexer) != NULL) assert(0 && "error while parsing tree"); 
     printf("node is %d\n", node);
     draw_tree(node);
-
+    
     // printf(" %d result \n";
 
     // Node* node = get_node(lexer);

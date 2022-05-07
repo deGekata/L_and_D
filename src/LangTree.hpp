@@ -82,9 +82,9 @@ enum class Operator{
 // ##### MEMORY #####
     ADDR    = 33, // return adress of R(VAR).                                           [memory]
     VAL     = 34, // return value  of R. (From memory).                                 [memory]
-
+    F_VIEW  = 35,
 // ##### DIFFERENTIATE #####
-    DIFF    = 35, // (R)'. R must differable.                                           [basic]
+    DIFF    = 36, // (R)'. R must differable.                                           [basic]
 };
 
 

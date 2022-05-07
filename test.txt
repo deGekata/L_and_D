@@ -1,1 +1,5 @@
-1+2+--b,,3,4,5;
+func lol(var a, var b) {
+    while (a == 0) {
+        10 + 10;
+    }
+}
