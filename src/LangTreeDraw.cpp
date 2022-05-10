@@ -245,9 +245,33 @@ void draw_operator(Node* node, FILE* output) {
     
     case Operator::FUNC:
         fprintf(output, "%s", "function");
+        if (node->is_proto == true) {
+            fprintf(output, "%s", ":proto");
+        }
+        break;
 
     case Operator::F_ARG:
         fprintf(output, "%s", ":");
+        break;
+    
+    case Operator::F_VIEW:
+        fprintf(output, "%s", "F_VIEW");
+        break;
+
+    case Operator::TERN_C:
+        fprintf(output, "%s", "TERN_C");
+        break;
+
+    case Operator::TERN_Q:
+        fprintf(output, "%s", "TERN_Q");
+        break;
+    
+
+    case Operator::WHILE:
+        fprintf(output, "%s", "while");
+        break;
+    
+    
 
     default:
         break;

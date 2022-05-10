@@ -106,7 +106,7 @@ struct Node
 {
     NodeType type = NodeType::NONE;
     NodeData data = {0};
-
+    bool is_proto = false;
     Node* left  = 0;
     Node* right = 0;
 

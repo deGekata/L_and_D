@@ -1,5 +1,8 @@
+
 func lol(var a, var b) {
-    while (a == 0) {
-        10 + 10;
-    }
+    if (a == 0) 
+        --a;
+    else 
+        a - b;   
+
 }

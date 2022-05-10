@@ -8,7 +8,7 @@
 
 
 int main(int argc, char* argv[]) {
-    Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
+        Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
     // FILE* file = fopen("/mnt/c/Users/Yaric-PC/Documents/Git Projects/L_and_D/test.txt", "r");
     system("pwd");
     FILE* file = fopen("test.txt", "r");

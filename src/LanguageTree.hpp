@@ -21,7 +21,7 @@ Node* parse_func_decl(Lexer* lexer);
  * @return true 
  * @return false 
  */
-bool parse_func_decl_require(Node* op_node, bool refresh);
+bool parse_func_decl_require(Node* op_node, int& checker_iteration);
 
 
 
@@ -33,6 +33,7 @@ bool parse_func_decl_require(Node* op_node, bool refresh);
  * @return Node* 
  */
 Node* parse_decl_var(Lexer* lexer);
+
 
 /**
  * @brief checking for obligatory tokens for decl_var
@@ -62,7 +63,7 @@ Node* parse_func_params(Lexer* lexer);
 bool parse_func_params_require(Node* op_node);
 
 /**
- * @brief parsing func_body: [exprs]*
+ * @brief parsing func_body: '{' [exprs]* '}'
  * 
  * @param lexer 
  * @return Node* 
@@ -70,13 +71,13 @@ bool parse_func_params_require(Node* op_node);
 Node* parse_func_body(Lexer* lexer);
 
 /**
- * @brief checking for obligatory
- * 
- * @param op_node 
+ * @brief checking for obligatory tokens for func_body
+ * @details '{' and '}'
+ * @param  Node* op_node 
  * @return true 
  * @return false 
  */
-bool parse_func_body_require(Node* op_node);
+bool parse_func_body_require(Node* op_node, int& checker_iteration);
 
 /**
  * @brief parsing single expr: contains operations from numbers and variables 
@@ -132,12 +133,31 @@ Node* parse_while(Lexer* lexer);
 /**
  * @brief checking obligatory tokens for while
  * @details tokens:'while', '(', ')', '{', '}'
- * @param op_node 
+ * @param Node* op_node 
+ * @param refresh 
  * @return true 
  * @return false 
  */
-bool parse_while_require(Node* op_node);
+bool parse_while_require(Node* op_node, int& checker_iteration);
 
+/**
+ * @brief parsing while with syntax: while (single_expr) {"func_body"};
+ * 
+ * @param lexer 
+ * @return Node* 
+ */
+Node* parse_if(Lexer* lexer);
+
+/**
+ * @brief checking obligatory tokens for while
+ * @details tokens:'if', '(', ')', func_body
+ * @details optional: 'else', func_body
+ * @param Node* op_node 
+ * @param refresh 
+ * @return true 
+ * @return false 
+ */
+bool parse_if_require(Node* op_node, int& checker_iteration);
 
 
 Node* parse_assigment_expr(Lexer* lexer);
@@ -185,8 +205,12 @@ Node* parse_unary_require(Lexer* lexer, Node* ret_node, Node* ret_node_dep);
 Node* parse_operand(Lexer* lexer);
 Node* parse_operand_require(Lexer* lexer);
 
+
+Node* parse_operators(Lexer* lexer);
+bool  parse_operators_require(Node* op_node);
+
 Node* parse_operator_operand(Lexer* lexer);
-bool parse_operator_operand(Node* op_node);
+bool  parse_operator_operand_require(Node* op_node);
 
 Node* parse_special_tern_op(Lexer* lexer);
 bool  parse_special_tern_op_require(Node* op_node);

@@ -30,6 +30,11 @@ void init_operator_hashes() {
     printf("var hash = %zu\n", operator_hashes[operator_hashes_size - 1]);
     new_command("func", Operator::FUNC);
     printf("func hash = %zu\n", operator_hashes[operator_hashes_size - 1]);
+    new_command("if", Operator::TERN_Q);
+    printf("func hash = %zu\n", operator_hashes[operator_hashes_size - 1]);
+    new_command("else", Operator::TERN_C);
+    printf("func hash = %zu\n", operator_hashes[operator_hashes_size - 1]);
+
 }
 
 void init_lexer (Lexer* lexer, FILE* file) {
@@ -371,6 +376,7 @@ void try_name_to_operator(Node* node) {
             printf("found some stuff %d\n", node->data.opr);
             return;
         }
+        
     }
     return;
 }

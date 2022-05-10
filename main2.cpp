@@ -1,7 +1,15 @@
 #include <stdio.h>
 
+int fn(int a) {
+    {
+        int a = 10;
+    }   
+    return a;
+}
+
+
 int main() {
-    ({if (!op_ || op_->type != NodeType::CUSTOM || op_->data.custom != operator_) {true;} else {false;};})
-    ({if (1 || 2 != 10) {true;} else {false;}});
+    unsigned int main = 10;
+    printf("%d", fn(15));
     return 0;
 }
