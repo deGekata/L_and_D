@@ -63,8 +63,8 @@ void MyVector<T>::pop_back() {
 template<typename T>
 T &MyVector<T>::operator[](size_t pos) {
     if (pos >= 0 &&  pos <= elem_num)
-        return *(this->arr + pos);
-    throw  std::__throw_runtime_error("Out of bounds element access");
+        return *(this->vector + pos);
+    std::__throw_logic_error("Out of bounds element access");
 }
 
 template<typename T>

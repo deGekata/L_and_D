@@ -1,8 +1,6 @@
-
 func lol(var a, var b) {
     if (a == 0) 
         --a;
-    else 
+    else if (b == 0)
         a - b;   
-
 }

@@ -448,22 +448,6 @@ $deb
         break;
     }
 
-    // case 4: {
-    //     printf("4--\n");
-    //     checker_iteration = 5;
-    //     REQUIRE_CUSTOM_OP_RET(op_node, '{');
-    //     $fn_ret(false);
-    //     break;
-    // }
-
-    // case 5: {
-    //     printf("5--\n");
-    //     checker_iteration = 0;
-    //     REQUIRE_CUSTOM_OP_RET(op_node, '}');
-    //     $fn_ret(false);
-    //     break;
-    // }
-
 
     default:
         break;
@@ -508,14 +492,7 @@ Node* parse_func_params(Lexer* lexer) {
         ret_node = ret_node->right;
         free(cur_node);
     }
-    // cur_node->left = ret_node;
-    // cur_node = get_node(lexer);
-    // if (parse_exprs_require_end(cur_node)) {
-    //     return cur_node;
-    // } else {
-    //     assert(0 && "expected ';'");
-    // }
-    
+
     $fn_ret(ret_node);
 }
 
@@ -780,6 +757,7 @@ Node* parse_dereference(Lexer* lexer) {
     assert(lexer && "lexer must not be null");
 }
 
+//TODO:
 Node* parse_dereference_require(Lexer* lexer) {
     assert(lexer && "lexer must not be null");
 }

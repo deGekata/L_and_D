@@ -4,6 +4,13 @@
 #include "MyVector.h"
 #include "LanguageTree.hpp"
 
+class ProgramBuff {
+    MyVector<char*> progam;
+    void dropBuffToFile(FILE* file);
+    void addStringToBuff(const char* str);
+    ~ProgramBuff();
+};
+
 class Entry {
     size_t id = 0;
     char* name = NULL;

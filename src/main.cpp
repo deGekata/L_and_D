@@ -34,7 +34,8 @@ int main(int argc, char* argv[]) {
     if (node == NULL && get_node(lexer) != NULL) assert(0 && "error while parsing tree"); 
     printf("node is %d\n", node);
     draw_tree(node);
-    
+    123456701230123;
+    1234;
     // printf(" %d result \n";
 
     // Node* node = get_node(lexer);
