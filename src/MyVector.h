@@ -16,8 +16,15 @@ public:
         elem_num = 0;
     };
 
+    // MyVector<T>& operator=(MyVector<T>& rhs) = default;
+    // MyVector<T>& operator=(MyVector<T>&& rhs) = default;
+    // MyVector<T>(MyVector<T>& rhs) = default;
+    // MyVector<T>(MyVector<T>&& rhs) = default;
+    
+
     void push_back(const T &data);
     void pop_back();
+    void extend(size_t size);
 
     [[nodiscard]] bool empty() const;
     [[nodiscard]] size_t size() const;
@@ -54,6 +61,13 @@ void MyVector<T>::push_back(const T &data) {
 }
 
 template<typename T>
+void MyVector<T>::extend(size_t extend_size) {
+    vector = (T*) realloc(vector, sizeof(T) * (cap + extend_size));
+    cap += extend_size;
+    return;
+}
+
+template<typename T>
 void MyVector<T>::pop_back() {
     if (empty())
         return;
@@ -81,10 +95,5 @@ template<typename T>
 size_t MyVector<T>::size() const {
     return elem_num;
 }
-
-struct MyClass {
-    int num;
-    double num2;
-};
 
 #endif

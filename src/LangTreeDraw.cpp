@@ -270,7 +270,14 @@ void draw_operator(Node* node, FILE* output) {
     case Operator::WHILE:
         fprintf(output, "%s", "while");
         break;
+
+    case Operator::RET:
+        fprintf(output, "%s", "return");
+        break;
     
+    case Operator::CALL:
+        fprintf(output, "%s", "CALL");
+        break;
     
 
     default:

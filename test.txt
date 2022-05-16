@@ -1,6 +1,8 @@
-func lol(var a, var b) {
-    if (a == 0) 
-        --a;
-    else if (b == 0)
-        a - b;   
+func main(var a, var b) {
+    return a + b;
+}
+
+func keker(var a, var b) {
+    a = b = c = 10;
+    
 }

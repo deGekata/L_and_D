@@ -24,6 +24,8 @@ void init_operator_hashes() {
         operator_hashes_cap = BASE_OPERATOR_HASHES_CAP;
         operator_hashes_size = 0;
     }
+    new_command("return", Operator::RET);
+    printf("return hash = %d\n", operator_hashes[operator_hashes_size - 1]);
     new_command("while", Operator::WHILE);
     printf("while hash = %d\n", operator_hashes[operator_hashes_size - 1]);
     new_command("var", Operator::VAR);

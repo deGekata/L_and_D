@@ -4,6 +4,15 @@
 #include <stdarg.h>
 #include "LangTree.hpp"
 #include "Tokenizer.hpp" 
+#include "MyVector.h"
+
+/**
+ * @brief parsing functions through all program
+ * 
+ * @param lexer 
+ * @return MyVector<Node*>& 
+ */
+MyVector<Node*>& parse_functions(Lexer* lexer);
 
 
 /**
@@ -160,24 +169,32 @@ Node* parse_if(Lexer* lexer);
 bool parse_if_require(Node* op_node, int& checker_iteration);
 
 
+//TODO:
+Node* parse_return(Lexer* lexer);
+bool parse_return_require(Node* op_node, int& checker_iteration);
+
+
+//TODO:
 Node* parse_assigment_expr(Lexer* lexer);
 bool  parse_assigment_expr_require(Node* op_node);
 
-
+//TODO:
 Node* parse_dereference(Lexer* lexer);
 bool  parse_dereference_require(Node* op_node);
 
-
+//TODO:
 Node* parse_function_call(Lexer* lexer);
-bool parse_function_call_require(Node* op_node);
+bool parse_function_call_require(Node* op_node, int& checker_iteration);
 
+//TODO:
 Node* parse_assigment_op(Lexer* lexer);
 bool  parse_assigment_op_require(Node* op_node);
 
-
+//TODO:
 Node* parse_comparison(Lexer* lexer);
 bool  parse_comparison_require(Node* op_node);
 
+//TODO:
 Node* parse_or(Lexer* lexer);
 bool  parse_or_require(Node* op_node);
 

@@ -90,6 +90,34 @@ bool check_eq(int cnt, Node* reference, ...) {
     return ret_val;
     
 }
+
+MyVector<Node*>& parse_functions(Lexer* lexer) {
+    MyVector<Node*>* my_vec = new MyVector<Node*>;
+
+    Node* cur_func = parse_func_decl(lexer);
+    while (cur_func != NULL) {
+        my_vec->push_back(cur_func);
+        cur_func = parse_func_decl(lexer);
+    }
+
+    if (get_node(lexer) != NULL) {
+        fprintf(stderr, "ended unexpectly, tried to parse function, but error detected");
+        assert(0);
+    }
+
+
+
+    for (size_t it = 0; it < my_vec->size(); ++it) {
+        if (strcmp((*my_vec)[it]->left->name, "main") == 0) {
+            return *my_vec;
+        }
+    }
+    
+    fprintf(stderr, "main function wasn`t found");
+    assert(0);
+    // return NULL;
+}
+
 //DONE: 
 Node* parse_while(Lexer* lexer) {
     assert(lexer && "lexer must not be NULL");
@@ -335,6 +363,70 @@ $deb
     }
 }
 
+Node* parse_return(Lexer* lexer) {
+    assert(lexer && "lexer must not be NULL");
+    $fn
+    int checker_iteration = 0;
+
+    Node* ret_op = get_node(lexer);
+
+
+    if (! parse_return_require(ret_op, checker_iteration)) $fn_ret(NULL);
+    pop_node(lexer);
+
+    //parse single expr that need to be returned
+    ret_op->left = parse_single_expr(lexer);
+    if (ret_op->left == NULL) {
+        fprintf(stderr, "expected expression in ( )\n");
+        $fn_ret(NULL);
+    }
+
+    //check for ';'
+    Node* cur_node = get_node(lexer);
+    if (! parse_return_require(cur_node, checker_iteration)) {
+        //FIXME:
+        fprintf(stderr, "expected ';' after single expression keyword\n");
+        $fn_ret(NULL);
+    }
+    pop_node(lexer);
+
+
+    cur_node->left = ret_op;
+    $fn_ret(cur_node);
+}
+
+bool parse_return_require(Node* op_node, int& checker_iteration) {
+    //FIXME: hz zachem?
+    $fn
+$deb
+    if (!op_node) $fn_ret(false);
+$deb
+    switch (checker_iteration) {
+    
+    case 0: {
+        $deb
+        checker_iteration = 1;
+        REQUIRE_OP_RET(op_node, Operator::RET);
+        printf("false ret");
+        $fn_ret(false);
+        break;
+    };
+
+    case 1: {
+        $deb
+        checker_iteration = 0;
+        REQUIRE_OP_RET(op_node, Operator::ENDL);
+        printf("false ret");
+        $fn_ret(false);
+        break;
+    };
+
+    }
+
+    return 0;
+}
+
+
 Node* parse_func_decl(Lexer* lexer) {
     assert(lexer && "lexer must not be NULL");
     $fn
@@ -520,6 +612,10 @@ Node* parse_func_body(Lexer* lexer) {
     Node* root_node= parse_operators(lexer);
     Node* cur_node = root_node;
 
+    if (root_node == NULL) {
+        root_node = parse_decl_var(lexer);
+    }
+
     if (!root_node) {
         //check for '}' token
         checker_node = get_node(lexer);
@@ -533,11 +629,17 @@ Node* parse_func_body(Lexer* lexer) {
     }
 
     cur_node->right = parse_operators(lexer);
-
+    if (cur_node->right == NULL) {
+        cur_node->right = parse_decl_var(lexer);
+    }
+    
     int it = 0;
     while (cur_node->right) {
         cur_node = cur_node->right;
         cur_node->right = parse_operators(lexer);
+        if (cur_node->right == NULL) {
+            cur_node->right = parse_decl_var(lexer);
+        }
     }
 
 
@@ -765,9 +867,114 @@ Node* parse_dereference_require(Lexer* lexer) {
 //TODO:
 Node* parse_function_call(Lexer* lexer) {
     assert(lexer && "lexer must not be null");
+    $fn
+
+    int checker_state = 0;
+
+    Node* identifier = get_node(lexer);
+    if (!parse_function_call_require(identifier, checker_state)) {
+        $fn_ret(NULL);
+    }
+    pop_node(lexer);
+
+    Node* cur_node = get_node(lexer);
+    if (!parse_function_call_require(cur_node, checker_state)) {
+        $fn_ret(identifier);
+    }
+    pop_node(lexer);
+
+
+
+    Node* op_node = (Node*) calloc(1, sizeof(Node));
+    op_node->type = NodeType::OPERATOR;
+    op_node->data.opr = Operator::CALL;
+    op_node->left = identifier;
+    
+
+    Node* ret_node = parse_single_expr(lexer);
+    Node* exp_node, *sep_node;
+    exp_node = cur_node = sep_node = NULL;
+
+    if (ret_node != NULL) {
+        sep_node = get_node(lexer);
+
+        if (parse_exprs_require_sep(sep_node)) {
+            cur_node = (Node*) calloc(1, sizeof(Node));
+            exp_node = ret_node;
+            ret_node = cur_node;
+            do {
+                // printf("%d exp_node ---------------------------------------------------\n", exp_node);
+                printf("in do whille-----------------------------------------------\n");
+                pop_node(lexer);
+                cur_node->right = sep_node;
+                sep_node->left = exp_node;
+                exp_node = parse_single_expr(lexer);
+                if (exp_node == NULL) {
+                    assert(0 && "expected expression, found ','");
+                }
+                cur_node = sep_node;
+                sep_node = get_node(lexer);
+            } while  (parse_exprs_require_sep(sep_node));
+            cur_node->right = exp_node;
+            cur_node = ret_node;
+            ret_node = ret_node->right;
+            free(cur_node);
+        }
+    }
+
+    op_node->right = ret_node;
+    cur_node = get_node(lexer);
+    if (!parse_function_call_require(cur_node, checker_state)) {
+        //TODO: generate normal error message
+        fprintf(stderr, "expected closing ')' bracket after func call");
+        assert(0);
+    }
+    pop_node(lexer);
+
+    $fn_ret(op_node);
+   
 }
-Node* parse_function_call_require(Lexer* lexer) {
-    assert(lexer && "lexer must not be null");
+
+
+bool parse_function_call_require(Node* op_node, int& checker_iteration) {
+
+    $fn
+$deb
+    if (!op_node) $fn_ret(false);
+$deb
+    switch (checker_iteration) {
+    
+    case 0: {
+        $deb
+        checker_iteration = 1;
+        if (op_node != NULL && op_node->type == NodeType::IDENTIFIER) {
+            $fn_ret(true);
+        }
+        printf("false ret");
+        $fn_ret(false);
+        break;
+    };
+
+    case 1: {
+        $deb
+        checker_iteration = 2;
+        REQUIRE_CUSTOM_OP_RET(op_node, '(');
+        $fn_ret(false);
+        break;
+    };
+
+    case 2: {
+        $deb
+        checker_iteration = 0;
+        REQUIRE_CUSTOM_OP_RET(op_node, ')');
+        $fn_ret(false);
+        break;
+    };
+
+
+    }
+
+    return 0;
 }
 
 Node* parse_assigment_op(Lexer* lexer) {
@@ -776,16 +983,30 @@ Node* parse_assigment_op(Lexer* lexer) {
     
     Node* ret_node = parse_comparison(lexer);
 
-    if (ret_node == NULL) {
-        ret_node = parse_decl_var(lexer);
-    }
+    // if (ret_node == NULL) {
+    //     // ret_node = parse_decl_var(lexer);
+    //     ret_node = parse_operand(lexer);
+        
+    // }
 
     Node* op_node = get_node(lexer);
 
     if (parse_assigment_op_require(op_node)) {
+        // if (ret_node == NULL || ret_node->type != NodeType::IDENTIFIER) {
+        //     //TODO: generate normal error
+        //     fprintf(stderr, "expected Identifier before assignment operator");
+        //     assert(0);
+        // }
+        // pop_node(lexer);
+        // op_node->right = parse_single_expr(lexer);
+        // if (op_node->right == NULL) {
+        //     fprintf(stderr, "expected single expression after assignment operator");
+        //     assert(0);
+        // }
         DO_BINARY_RECURSION_FN(parse_assigment_op, {
             if (ret_node->type == NodeType::OPERATOR && ret_node->data.opr == Operator::SHR)
         });        
+
     }
 
     
@@ -1065,7 +1286,8 @@ Node* parse_operand(Lexer* lexer) {
         break;
     
     case NodeType::IDENTIFIER:
-        pop_node(lexer);
+        token = parse_function_call(lexer);
+        // pop_node(lexer);
         $fn_ret(token);
         break;
     
@@ -1126,6 +1348,10 @@ Node* parse_operators(Lexer* lexer) {
 
     ret_node = parse_func_body(lexer);
     if (ret_node != NULL) $fn_ret(ret_node);
+
+    ret_node = parse_return(lexer);
+    if (ret_node != NULL) $fn_ret(ret_node);
+
 
     //TODO: do other operators
 
