@@ -91,8 +91,8 @@ bool check_eq(int cnt, Node* reference, ...) {
     
 }
 
-MyVector<Node*>& parse_functions(Lexer* lexer) {
-    MyVector<Node*>* my_vec = new MyVector<Node*>;
+Vector<Node*>& parse_functions(Lexer* lexer) {
+    Vector<Node*>* my_vec = new Vector<Node*>;
 
     Node* cur_func = parse_func_decl(lexer);
     while (cur_func != NULL) {
@@ -180,12 +180,13 @@ Node* parse_while(Lexer* lexer) {
     //     $fn_ret(NULL);
     // }
     // pop_node(lexer);
-    CREATE_ENDL_NODE(endl_node);
-    endl_node->left = while_op;
+    // CREATE_ENDL_NODE(endl_node);
+
+    // endl_node->left = while_op;
     // cur_node->left = while_op;
     // pop_node(lexer);
 
-    $fn_ret(endl_node);
+    $fn_ret(while_op);
 }
 
 bool parse_while_require(Node* op_node, int& checker_iteration) {
@@ -307,13 +308,13 @@ Node* parse_if(Lexer* lexer) {
             assert(0);
             $fn_ret(NULL);
         }
-        CREATE_ENDL_NODE(endl_node);
-        endl_node->left = if_op;
-        $fn_ret(endl_node);
+        // CREATE_ENDL_NODE(endl_node);
+        // endl_node->left = if_op;
+        $fn_ret(if_op);
     }
-    CREATE_ENDL_NODE(endl_node);
-    endl_node->left = if_op;
-    $fn_ret(endl_node);
+    // CREATE_ENDL_NODE(endl_node);
+    // endl_node->left = if_op;
+    $fn_ret(if_op);
 }
 
 bool parse_if_require(Node* op_node, int& checker_iteration) {
@@ -353,7 +354,11 @@ $deb
         checker_iteration = 0;
         // checker_iteration = 4;
         printf("3--\n");
-        REQUIRE_OP_RET(op_node, Operator::TERN_C);
+        if (op_node != NULL && op_node->type == NodeType::OPERATOR && op_node->data.opr == Operator::TERN_C) {
+            $fn_ret(true);
+        }
+        // bool res = REQUIRE_OP(op_node, Operator::TERN_C);
+        // $fn_ret(res);
         $fn_ret(false);
         break;
     }
@@ -391,8 +396,8 @@ Node* parse_return(Lexer* lexer) {
     pop_node(lexer);
 
 
-    cur_node->left = ret_op;
-    $fn_ret(cur_node);
+    // cur_node->left = ret_op;
+    $fn_ret(ret_op);
 }
 
 bool parse_return_require(Node* op_node, int& checker_iteration) {
@@ -612,10 +617,6 @@ Node* parse_func_body(Lexer* lexer) {
     Node* root_node= parse_operators(lexer);
     Node* cur_node = root_node;
 
-    if (root_node == NULL) {
-        root_node = parse_decl_var(lexer);
-    }
-
     if (!root_node) {
         //check for '}' token
         checker_node = get_node(lexer);
@@ -628,18 +629,15 @@ Node* parse_func_body(Lexer* lexer) {
 
     }
 
-    cur_node->right = parse_operators(lexer);
-    if (cur_node->right == NULL) {
-        cur_node->right = parse_decl_var(lexer);
-    }
+    cur_node->next = parse_operators(lexer);
+    // if (cur_node->right == NULL) {
+    //     cur_node->right = parse_decl_var(lexer);
+    // }
     
     int it = 0;
-    while (cur_node->right) {
-        cur_node = cur_node->right;
-        cur_node->right = parse_operators(lexer);
-        if (cur_node->right == NULL) {
-            cur_node->right = parse_decl_var(lexer);
-        }
+    while (cur_node->next) {
+        cur_node = cur_node->next;
+        cur_node->next = parse_operators(lexer);
     }
 
 
@@ -1235,10 +1233,11 @@ Node* parse_unary(Lexer* lexer) {
             $deb
             parse_unary_require(lexer, ret_node, ret_node_dep);
             $deb
-            ret_node->right = ret_node_dep;
+            ret_node->left = ret_node_dep;
             $deb
         } else {
-            printf("raise error expected unary\n");
+            // printf("raise error expected unary\n");
+            // assert(0);
             //TODO: raise error
             $fn_ret(NULL);
         }
@@ -1352,6 +1351,17 @@ Node* parse_operators(Lexer* lexer) {
     ret_node = parse_return(lexer);
     if (ret_node != NULL) $fn_ret(ret_node);
 
+    ret_node = parse_decl_var(lexer); 
+    if (ret_node != NULL) {
+        Node* endl_node = get_node(lexer);
+        if (endl_node != NULL && endl_node->type == NodeType::OPERATOR && endl_node->data.opr == Operator::ENDL) {
+            pop_node(lexer);
+            $fn_ret(ret_node);
+        } else {
+            fprintf(stderr, "expected ; after var declaration");
+            assert(0);
+        }
+    }
 
     //TODO: do other operators
 
@@ -1386,7 +1396,7 @@ bool  parse_var_op_require(Node* op_node) {
 
 bool is_unary (Node* node) {
     assert(node && "null");
-
+    
     return node->type == NodeType::OPERATOR && (
            node->data.opr == Operator::DEC || 
            node->data.opr == Operator::NOT || 

@@ -92,11 +92,15 @@ void draw_node(Node* node, FILE* output) {
     fprintf(output, " style=filled];\n");
 
     if (node->left != NULL)  { 
-        fprintf(output, "    L%lu->L%lu[color=\"black\"];\n", node, node->left);
+        fprintf(output, "    L%lu->L%lu[color=\"black\", label=\"Left\"];\n", node, node->left);
     }
 
     if (node->right != NULL) { 
-        fprintf(output, "    L%lu->L%lu[color=\"black\"];\n", node, node->right);
+        fprintf(output, "    L%lu->L%lu[color=\"black\", label=\"Right\"];\n", node, node->right);
+    }
+
+     if (node->next != NULL) { 
+        fprintf(output, "    L%lu->L%lu[color=\"black\", label=\"next\"];\n", node, node->next);
     }
 
     if (node->left != NULL)  { 
@@ -105,6 +109,10 @@ void draw_node(Node* node, FILE* output) {
     
     if (node->right != NULL) { 
         draw_node(node->right,  output);
+    }
+
+    if (node->next != NULL) { 
+        draw_node(node->next,  output);
     }
 
 }

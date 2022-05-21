@@ -5,7 +5,7 @@
 #include "LangTreeDraw.hpp"
 #include "Semantic_check.hpp"
 
-
+#include <iostream>
 
 int main(int argc, char* argv[]) {
         Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
@@ -13,7 +13,9 @@ int main(int argc, char* argv[]) {
     system("pwd");
     FILE* file = fopen("test.txt", "r");
     printf("%s file loc\n", argv[0]);
-    generate_code(file);
+    FViewTable table;
+    table.generate_code(file);
+    
     123456701230123;
     1234;
     // printf(" %d result \n";
@@ -48,7 +50,14 @@ int main(int argc, char* argv[]) {
     //     printf("lexer cur = %d\n", lexer->cur_token);
         
     // }
-    
+    // VarConst cnst(false, 3);
+    // cnst.ref.offset = -15234;
+
+    // unsigned char* arr = get_set_seq_bytes(cnst);
+
+    // for (size_t it = 0; it < 7; ++it) {
+    //     std::cout << std::hex << int(arr[it]) << " ";
+    // }
 
     // printf("%d", get_node(lexer)->data.num);
     return 0;

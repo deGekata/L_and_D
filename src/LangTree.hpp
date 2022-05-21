@@ -109,6 +109,7 @@ struct Node
     bool is_proto = false;
     Node* left  = 0;
     Node* right = 0;
+    Node* next = 0;
 
     #ifdef NODE_DEBUG_INFO
     char*  name = 0;

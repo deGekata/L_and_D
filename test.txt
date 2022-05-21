@@ -1,8 +1,11 @@
 func main(var a, var b) {
-    return a + b;
+    var k;
+    var m;
+    m = 15;
+
+    return 4;   
 }
 
-func keker(var a, var b) {
-    a = b = c = 10;
-    
+func keker(var k, var b) {
+    7 + 4;
 }

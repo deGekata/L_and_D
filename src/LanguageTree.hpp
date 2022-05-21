@@ -12,7 +12,7 @@
  * @param lexer 
  * @return MyVector<Node*>& 
  */
-MyVector<Node*>& parse_functions(Lexer* lexer);
+Vector<Node*>& parse_functions(Lexer* lexer);
 
 
 /**
