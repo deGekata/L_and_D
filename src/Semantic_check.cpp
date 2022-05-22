@@ -254,7 +254,7 @@ void FViewTable::generate_func_params(Node* node) {
     Node* cur_node = node->right->left;
     if (cur_node == NULL) return;
 
-    int64_t max_offset = -24;  //return seg + return offset + pushed rbp
+    int64_t max_offset = -16;  //return seg + return offset + pushed rbp
 
     if (cur_node->type == NodeType::OPERATOR) {
         while (cur_node != NULL && cur_node->type == NodeType::OPERATOR && cur_node->data.opr == Operator::COMMA) {
@@ -266,7 +266,7 @@ void FViewTable::generate_func_params(Node* node) {
         cur_node = node->right->left;
 
         while (cur_node->type == NodeType::OPERATOR && cur_node->data.opr == Operator::COMMA) {
-            bool is_not_ok = this->insertEntry(cur_node->left->left->name, max_offset);
+            bool is_not_ok = this->insertEntry(cur_node->left->left->name, -max_offset);
             if (is_not_ok) {
                 fprintf(stderr, "found duplication in variables");
             }
@@ -275,7 +275,7 @@ void FViewTable::generate_func_params(Node* node) {
         }
     }
 
-    bool is_not_ok = this->insertEntry(cur_node->left->name, max_offset);
+    bool is_not_ok = this->insertEntry(cur_node->left->name,-max_offset);
     if (is_not_ok) {
         fprintf(stderr, "found duplication in variables");
     }
@@ -359,7 +359,7 @@ void FViewTable::generate_all(Node* root) {
                 }
 
                 case Operator::VAR: {
-                    bool is_not_ok = this->insertEntry(root->left->name, this->current_size + 8);
+                    bool is_not_ok = this->insertEntry(root->left->name, -(this->current_size + 8));
                     if (is_not_ok) {
                         fprintf(stderr, "found duplication in variables");
                     }
@@ -576,7 +576,7 @@ byte_code_instance* FViewTable::get_func_body_begin_seq_bytes() {
     static unsigned char byte_arr[] = { 
         0x55,                                       // push   rbp
         0x48, 0x89, 0xE5,                           // mov    rbp,rsp
-        0x48, 0x81, 0xC4, 0x10, 0x27, 0x00, 0x00    // add    rsp, 'number'
+        0x48, 0x81, 0xEC, 0x10, 0x27, 0x00, 0x00    // sub    rsp, 'number'
     };
     static byte_code_instance instance = {
         .bytes = byte_arr,
@@ -593,7 +593,7 @@ byte_code_instance* FViewTable::get_func_body_begin_seq_bytes() {
 byte_code_instance* FViewTable::get_func_body_end_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = { 
-        0x48, 0x81, 0xEC, 0x10, 0x27, 0x00, 0x00,   // add rsp, 'number'
+        0x48, 0x81, 0xC4, 0x10, 0x27, 0x00, 0x00,   // add rsp, 'number'
         0x5D,                                       // pop rbp
         0xC3                                        // ret
     };
@@ -968,8 +968,8 @@ char* FViewTable::get_sub_seq(VarConst lhs, VarConst rhs) {
 byte_code_instance* FViewTable::get_sub_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = {
-        0x5b, // pop rbx
         0x5a, // pop rdx
+        0x5b, // pop rbx
         0x48, 0x29, 0xd3, // sub rbx,rdx
         0x53 // push rbx
     };
@@ -1320,8 +1320,8 @@ char* FViewTable::get_eq_seq(VarConst lhs, VarConst rhs) {
 byte_code_instance* FViewTable::get_equal_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = {
-        /*401004:*/         0x59,                      //pop    rcx
         /*401005:*/         0x5b,                      //pop    rbx
+        /*401004:*/         0x59,                      //pop    rcx
         /*401006:*/         0x48, 0x39, 0xd9,          //cmp    rcx,rbx
         /*401009:*/         0x74, 0x04,                //je     40100f <_start.if_true>
         /*40100b:*/         0x6a, 0x00,                //push   0x0
@@ -1362,8 +1362,8 @@ char* FViewTable::get_non_eq_seq(VarConst lhs, VarConst rhs) {
 byte_code_instance* FViewTable::get_non_eq_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = {
-        /*401004:*/         0x59,                      //pop    rcx
         /*401005:*/         0x5b,                      //pop    rbx
+        /*401004:*/         0x59,                      //pop    rcx
         /*401006:*/         0x48, 0x39, 0xd9,          //cmp    rcx,rbx
         /*401009:*/         0x75, 0x04,                //jne    40100f <_start.if_true>
         /*40100b:*/         0x6a, 0x00,                //push   0x0
@@ -1403,12 +1403,12 @@ char* FViewTable::get_less_seq(VarConst lhs, VarConst rhs) {
 byte_code_instance* FViewTable::get_less_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = {
-        /*401004:*/         0x59,                      //pop    rcx
         /*401005:*/         0x5b,                      //pop    rbx
+        /*401004:*/         0x59,                      //pop    rcx
         /*401006:*/         0x48, 0x39, 0xd9,          //cmp    rcx,rbx
         /*401009:*/         0x7c, 0x04,                //jg     40100f <_start.if_true>
         /*40100b:*/         0x6a, 0x00,                //push   0x0
-        /*40100d:*/         0x7d, 0x02,                //jle    401011 <_start.if_end>
+        /*40100d:*/         0x7d, 0x02,                //jl    401011 <_start.if_end>
 
         //<_start.if_true>:
         /*40100f:*/         0x6a, 0x01                 //push   0x1
@@ -1445,8 +1445,8 @@ byte_code_instance* FViewTable::get_grtr_seq_bytes() {
     //TODO:
 
     static unsigned char byte_arr[] = {
-        /*401004:*/         0x59,                      //pop    rcx
         /*401005:*/         0x5b,                      //pop    rbx
+        /*401004:*/         0x59,                      //pop    rcx
         /*401006:*/         0x48, 0x39, 0xd9,          //cmp    rcx,rbx
         /*401009:*/         0x7f, 0x04,                //jg     40100f <_start.if_true>
         /*40100b:*/         0x6a, 0x00,                //push   0x0
@@ -1487,8 +1487,8 @@ char* FViewTable::get_less_eq_seq(VarConst lhs, VarConst rhs) {
 byte_code_instance* FViewTable::get_less_eq_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = {
-        /*401004:*/         0x59,                      //pop    rcx
         /*401005:*/         0x5b,                      //pop    rbx
+        /*401004:*/         0x59,                      //pop    rcx
         /*401006:*/         0x48, 0x39, 0xd9,          //cmp    rcx,rbx
         /*401009:*/         0x7e, 0x04,                //jle     40100f <_start.if_true>
         /*40100b:*/         0x6a, 0x00,                //push   0x0
@@ -1528,8 +1528,8 @@ char* FViewTable::get_grtr_eq_seq(VarConst lhs, VarConst rhs) {
 byte_code_instance* FViewTable::get_grtr_eq_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = {
-        /*401004:*/         0x59,                      //pop    rcx
         /*401005:*/         0x5b,                      //pop    rbx
+        /*401004:*/         0x59,                      //pop    rcx
         /*401006:*/         0x48, 0x39, 0xd9,          //cmp    rcx,rbx
         /*401009:*/         0x7d, 0x04,                //jge     40100f <_start.if_true>
         /*40100b:*/         0x6a, 0x00,                //push   0x0

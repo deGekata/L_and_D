@@ -1,18 +1,15 @@
-func main(var a, var b) {
-    var k;
-    var m;
-    m = 15;
-    while (m) {
-        m = m - 1;
-    }
-
-    return keker(15, a);   
+func main() {
+    return fact(3);   
 }
 
-func keker(var k, var b) {
-    k = main(1, 4);
-    {
-        b = main(1, 4);
+func fact(var k) {
+    var it;
+    var fc;
+    fc = 1;
+    it = 1;
+    while (it <= k) {
+        fc = fc * it;
+        it = it + 1;
     }
-    7 + 4;
+    return fc;
 }
