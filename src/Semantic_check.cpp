@@ -51,6 +51,14 @@ void ProgramBuff::dropBuffToFile(FILE* file) {
     return;
 }
 
+void ProgramBuff::dropBuffToArray(unsigned char* arr) {
+    assert(arr);
+
+    memcpy(arr, this->binary_program.data(), binary_program.size());
+    return;
+}
+
+
 int FViewTable::insertEntry(size_t id, char* name) {
     for (size_t it = 0; it < members.size(); ++it) {
         if (strcmp(members[it].name, name) == 0) {
@@ -145,7 +153,7 @@ FViewTable& FViewTable::operator=(const FViewTable& rhs) {
 
 
 
-void FViewTable::generate_code(FILE* file) {
+byte_code_instance* FViewTable::generate_code(FILE* file) {
     
     Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
     init_lexer(lexer, file);
@@ -181,17 +189,64 @@ void FViewTable::generate_code(FILE* file) {
     }
 
     for (size_t it = 1; it < func_tables.size(); ++it) {
-        func_tables[it].global_code_offset = func_tables[it].buff->bin_program_size() +func_tables[it].global_code_offset;
+        func_tables[it].global_code_offset = func_tables[it - 1].buff->bin_program_size() + func_tables[it - 1].global_code_offset;
+        func_name_table.members[it].offset = func_tables[it].global_code_offset;
+        it + it;
     }
 
-    FILE* testing_file = fopen("bytet.txt", "wb");
     for (size_t it = 0; it < func_tables.size(); ++it) {
-        func_tables[it].buff->dropBuffToFile(testing_file);
+        func_tables[it].process_calls(func_tables[it].global_code_offset, func_name_table);
+    }
+
+    
+
+    
+    uint8_t HLT_FUNC[] = {
+        0xE8, 0x00, 0x00, 0x00, 0x00,   // call main (need to find main)
+        0xb8, 0x3c, 0x00, 0x00, 0x00,   // mov eax, 0x3c
+        0x48, 0x31, 0xff,               // xor rdi, rdi
+        0x0f, 0x05};                    // syscall
+    
+    const uint32_t HLT_SIZE  = sizeof(HLT_FUNC);
+
+    uint64_t code_size = HLT_SIZE;
+    int32_t main_pos = 5;
+    for (size_t it = 0; it < func_tables.size(); ++it) {
+        code_size += func_tables[it].buff->bin_program_size();
+        if (strcmp(func_name_table.members[it].name, "main") == 0) {
+            main_pos = func_name_table.members[it].offset + HLT_SIZE - 5;
+        }
+    }
+
+    for (size_t it = 1; it < 5; ++it) {
+        HLT_FUNC[it] = (char)(main_pos & 0xff);
+        main_pos = main_pos >> 8;
+    }
+
+    
+
+
+    unsigned char* bytes = (unsigned char*) calloc(code_size + 1, sizeof(unsigned char));
+
+    byte_code_instance* instance = (byte_code_instance*) calloc(1, sizeof(byte_code_instance));
+
+
+    instance->bytes = bytes;
+    instance->size = code_size;
+
+    for (size_t it = 0; it < HLT_SIZE; ++it) {
+        bytes[it] = HLT_FUNC[it];
+    }   
+    bytes += HLT_SIZE;
+
+    for (size_t it = 0; it < func_tables.size(); ++it) {
+        func_tables[it].buff->dropBuffToArray(bytes);
+        bytes += func_tables[it].buff->bin_program_size();
     }
     
+        
     
-    
-    return;
+    return instance;
 
 }
 
@@ -259,7 +314,6 @@ void FViewTable::generate_func_body(Node* func_root) {
     this->buff->writeLittleEndianInt(rsp_diff_sub_pos, max_block_size);
 
     process_return_jmps(end_block_ret_offset);
-
     return;
 }
 
@@ -477,6 +531,25 @@ void FViewTable::generate_all(Node* root) {
 }
 
 
+void FViewTable::process_calls(int this_offset, FViewTable& table_offsets) {
+    for (size_t it = 0; it < this->unresolved_calls.size(); ++it) {
+        Entry* func = table_offsets.findEntry(unresolved_calls[it].name);
+        if (func == NULL) {
+            fprintf(stderr, "cant find function %s\n", unresolved_calls[it].name);
+            assert(0);
+        }
+        int mid = (unresolved_calls[it].offset + this_offset + IF_JMP_COND_MAGIC_OFFSET);
+        this->buff->writeLittleEndianInt(unresolved_calls[it].offset, func->offset - mid);
+    }
+
+    for (size_t it = 0; it < this->childs.size(); ++it) {
+        this->childs[it].process_calls(this_offset, table_offsets);
+    }
+
+    return;
+}
+
+
 void FViewTable::process_return_jmps(int return_begin) {
     for (size_t it = 0; it < unresolved_returns.size(); ++it) {
         buff->writeLittleEndianInt(unresolved_returns[it].offset, return_begin - unresolved_returns[it].offset - 4);
@@ -555,7 +628,8 @@ char* FViewTable::get_ret_seq(VarConst lhs, VarConst rhs) {
 byte_code_instance* FViewTable::get_ret_seq_bytes() {
     //TODO:
     static unsigned char byte_arr[] = {
-        0xe9, 0x80, 0x01, 0x00, 0x00 // relative jmp on some big offset that will be replaced on return expression on the end of function   
+        0x58,                           // pop rax
+        0xe9, 0x80, 0x01, 0x00, 0x00    // relative jmp on some big offset that will be replaced on return expression on the end of function   
     };
     static byte_code_instance instance = {
         .bytes = byte_arr,

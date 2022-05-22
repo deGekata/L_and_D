@@ -2,10 +2,17 @@ func main(var a, var b) {
     var k;
     var m;
     m = 15;
+    while (m) {
+        m = m - 1;
+    }
 
-    return 4;   
+    return keker(15, a);   
 }
 
 func keker(var k, var b) {
+    k = main(1, 4);
+    {
+        b = main(1, 4);
+    }
     7 + 4;
 }

@@ -4,17 +4,20 @@
 #include "LanguageTree.hpp"
 #include "LangTreeDraw.hpp"
 #include "Semantic_check.hpp"
-
+#include "ElfGenerator.hpp"
 #include <iostream>
 
 int main(int argc, char* argv[]) {
         Lexer* lexer = (Lexer*) calloc(1, sizeof(Lexer));
     // FILE* file = fopen("/mnt/c/Users/Yaric-PC/Documents/Git Projects/L_and_D/test.txt", "r");
     system("pwd");
-    FILE* file = fopen("test.txt", "r");
+    FILE* input = fopen("test.txt", "r");
+    FILE* output = fopen("output", "wb");
+
+    CompileProgram(input, output);
+
     printf("%s file loc\n", argv[0]);
-    FViewTable table;
-    table.generate_code(file);
+    
     
     123456701230123;
     1234;

@@ -3,7 +3,6 @@
 
 #include "MyVector.h"
 #include "LanguageTree.hpp"
-#include "CodeGenerator.hpp"
 #include "LangTreeDraw.hpp"
 
 #define IF_JMP_COND_MAGIC_OFFSET 4
@@ -34,6 +33,7 @@ public:
     
     ~ProgramBuff();
     void dropBuffToFile(FILE* file);
+    void dropBuffToArray(unsigned char* arr);
 private:
     Vector<unsigned char> binary_program;
     Vector<char*> program;
@@ -105,6 +105,8 @@ public:
     void update_size();
 
     void changeCurSizeDelta(int diff) { current_size += diff; };
+
+    void process_calls(int this_offset, FViewTable& table_offsets);
 
     void process_return_jmps(int return_begin);
 
@@ -250,7 +252,7 @@ public:
     //TODO:
     unsigned char* get_dec_seq_bytes(VarConst lhs, VarConst rhs);
 
-    void generate_code(FILE* file);
+    byte_code_instance* generate_code(FILE* file);
 
 };
 
