@@ -1,5 +1,10 @@
 func main() {
-    return fact(3);   
+    var cnt;
+    cnt = 10000000;
+    while (cnt != 0) {
+        fact(6);  
+        cnt = cnt - 1; 
+    }
 }
 
 func fact(var k) {
